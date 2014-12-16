@@ -1,0 +1,144 @@
+\documentclass[a4paper,12pt,oneside]{article}
+\usepackage[utf8]{inputenc} 
+\usepackage[francais]{babel}
+\usepackage{shadow, fancybox}
+\usepackage{rotating}
+\usepackage{color}
+\definecolor{blue}{rgb}{0,0.2,1}
+
+
+\renewcommand{\thesection}{\Roman{section}}
+\renewcommand{\thesubsection}{\Roman{section}.\arabic{subsection}}
+\renewcommand{\thesubsubsection}{\Roman{section}.\arabic{subsection}.\arabic{subsubsection}}
+
+\begin{document}
+<<ini,echo=FALSE>>=
+load('Report.RData')
+@
+\begin{titlepage}
+
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}} 
+
+\begin{center}
+\includegraphics[scale=0.5]{min.png}
+\end{center}\\[1cm] 
+\centering 
+\textsc{\large Projet InfoSaniR: Rapport Dynamique}\\[0.5cm] 
+ 
+\HRule \\[0.4cm]
+{ \huge \bfseries \textcolor[rgb]{0.00,0.00,1.00}{Données statistiques sanitaires dans la province du 
+\Sexpr{data0$Province[1]}, Gabon}}\\[0.4cm] % Title of your document
+\HRule \\[1.5cm]
+ 
+\textbf{\Sexpr{data0$Annee[1]}}\\[2cm] 
+
+\vfill 
+
+\end{titlepage}
+\listoftables
+\listoffigures
+\clearpage
+\tableofcontents
+\clearpage
+
+\section{Profil épidémiologie}
+\subsection{La distribution du nombre de consultations par structure sanitaire}
+<<tab,results='asis',echo=FALSE>>=
+library(xtable)
+tab <- xtable((TabNom),
+caption="Nombre de consultations par structure sanitaire",
+label="tab",digits=2)
+print(tab,include.rownames = FALSE,scalebox=0.9)
+@
+
+\clearpage
+\subsection{Les 25 principales causes de morbidité}
+<<tab0,results='asis',echo=FALSE>>=
+tab0 <- xtable((TabDept1c),
+caption="Les 25 principales causes de morbidité par département sanitaire",
+label="tab0",digits=0)
+print(tab0,include.rownames = FALSE)
+@
+\textcolor{blue}{Remarque}: La derniére ligne de la table \ref{tab0} correspondant au total prend aussi en compte les autres pathologies non citées. Il en est de meme pour tous les tables dans cette section.
+ 
+\clearpage
+<<tab1,results='asis',echo=FALSE>>=
+tab1 <- xtable((TabDept3c),
+caption="Les 25 principales causes de morbidité par type structures sanitaires",
+label="tab1",digits=0)
+print(tab1,floating.environment='sidewaystable',include.rownames = FALSE)
+@
+
+\clearpage
+<<tab2,results='asis',echo=FALSE>>=
+tab2 <- xtable((TabDept5c),
+caption="Les 25 principales causes de morbidité par catégorie d'ages",
+label="tab2",digits=0)
+print(tab2,floating.environment='sidewaystable',include.rownames = FALSE)
+@
+
+\clearpage
+<<tab3,results='asis',echo=FALSE>>=
+tab3 <- xtable((TabDept7c),
+caption="Les 25 principales causes de morbidité par sexe",
+label="tab3",digits=0)
+print(tab3, include.rownames = FALSE)
+@
+
+\clearpage
+\section{Saisonalité des pathologies}
+\subsection{Pathologies infectieuses et parasitaires}
+<<Fig1, echo=FALSE, fig.show='asis', fig.align='center', fig.height=5, fig.width=12.95, fig.env='figure',    fig.cap="Saisonalité des 10 premiéres maladies infectieuses et parasitaires au cours de l'année",fig.pos='!htbp',message=FALSE>>=
+p1
+@
+<<Fig2,echo=FALSE,fig.show='asis',fig.align='center', fig.width=11.6,out.width="1.1\\linewidth",fig.env='figure',fig.cap="Saisonalité du paludisme, SIDA, diarrhée aigue, gastro-entérite, et tuberculoses toutes formes par département au cours de l'année",fig.pos='!htbp',message=FALSE>>=
+p2
+@
+<<Fig3,echo=FALSE,fig.show='asis',fig.align='center',fig.height=8, fig.width=14,out.width="1.4\\linewidth",fig.env='figure',fig.cap="Saisonalité de la diarrhée aigue, gastro-entérite et du paludisme par structures de santé au cours de l'année",fig.pos='!htbp',out.extra='angle=90',message=FALSE>>=
+p3
+@
+<<Fig4,echo=FALSE,fig.show='asis',fig.align='center', fig.width=11.6,out.width="1.2\\linewidth",fig.env='figure',fig.cap="Distribution du SIDA selon l'age et le sexe dans l'année",fig.pos='t',message=FALSE>>=
+p4
+@
+
+
+\subsection{Autres pathologies}
+\subsubsection{Pathologies non-communicables}
+<<tab4,results='asis',echo=FALSE,message=FALSE>>=
+for (i in 1:length(TabSais4a)){
+  print(xtable((as.data.frame(TabSais4a[[i]])),
+  caption=paste(paste('Département',names(TabSais4a)[i],sep=' '),"Saisonalité du Diabéte et l'hypertension artérielle durant l'année",sep=': '),
+  label="tab4",digits=0),include.rownames = FALSE) 
+}
+@
+
+<<Fig5, echo=FALSE, fig.show='asis', fig.align='center', fig.width=11.6,out.width="1.1\\linewidth", fig.env='figure', fig.cap="Saisonalité du diabéte et l'hypertension artérielle durant l'année",fig.pos='!htbp',message=FALSE>>=
+p5
+@
+\clearpage
+\subsubsection{Pathologies respiratoires}
+<<tab5,results='asis',echo=FALSE,message=FALSE>>=
+for (i in 1:length(TabSais6a)){
+  print(xtable((as.data.frame(TabSais6a[[i]])),
+  caption=paste(names(TabSais6a)[i],"Saisonalité de la grippe, bronchite et la rhinite durant l'année",sep=': '),
+  label="tab5",digits=0),include.rownames = FALSE) 
+}
+@
+
+<<Fig6, echo=FALSE, fig.show='asis', fig.align='center', fig.height=5, fig.width=11,out.width="1.25\\linewidth", fig.env='figure', fig.cap="Distribution des cas de grippe, bronchite et de rhinites durant l'année",fig.pos='!htbp',message=FALSE>>=
+p6
+@
+
+
+
+\clearpage
+\section{Indicateurs de santé publique}
+\subsection{Santé maternité}
+\subsection{Santé infantile}
+\subsection{Vaccination}
+
+
+
+
+
+\end{document}

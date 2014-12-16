@@ -1,0 +1,2 @@
+exportPattern("^[[:alpha:]]+")
+import(reshape, stringr,  openxlsx, xlsx, plyr, ggplot2, knitr, RColorBrewer, tools)

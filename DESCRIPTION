@@ -1,0 +1,28 @@
+Package: GabSaniR
+Type: Package
+Title: Extraction, checking and dynamic report based on InfoSani data in region
+    of Gabon
+Version: 1.0
+Date: 2014-12-02
+Author: Regis Obiang <regis.obiang@lambarene.org>, Bertrand Lell
+    <bertrand.lell@gmail.com>
+Maintainer: Regis Obiang <regis.obiang@lambarene.org>
+Description: This package is a tool that contains three main functions
+    (InfoSaniR_extract, InfoSaniR_check, InfoSaniR_report) that facilitates
+    faster extraction, checking the InfoSani data for each year, next generates
+    automatically a statistical annual report of health for region of Gabon.
+    The documentation and help pages are written in french
+License: GPL
+Depends:
+    R (>= 3.1.2),
+    reshape,
+    xlsx,
+    openxlsx,
+    stringr,
+    knitr,
+    plyr,
+    ggplot2,
+    RColorBrewer,
+    tools
+Encoding: latin1
+URL: https://github.com/RegisOB

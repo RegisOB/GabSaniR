@@ -1,0 +1,329 @@
+\documentclass[a4paper,12pt,oneside]{article}
+\usepackage[utf8]{inputenc} 
+\usepackage[francais]{babel}
+\usepackage{shadow, fancybox}
+\usepackage{rotating}
+\usepackage{color}
+\definecolor{blue}{rgb}{0,0.2,1}
+
+
+\renewcommand{\thesection}{\Roman{section}}
+\renewcommand{\thesubsection}{\Roman{section}.\arabic{subsection}}
+\renewcommand{\thesubsubsection}{\Roman{section}.\arabic{subsection}.\arabic{subsubsection}}
+
+\begin{document}
+\begin{titlepage}
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}} 
+
+\begin{center}
+\includegraphics[scale=0.5]{min.png}
+\end{center}\\
+\centering 
+\textsc{\large Projet InfoSaniR: Rapport Dynamique}\\[0.5cm] 
+ 
+\HRule \\[0.4cm]
+{ \huge \bfseries \textcolor[rgb]{0.00,0.00,1.00}{Données statistiques sanitaires dans la province du 
+\Sexpr{patho$Province[1]}, Gabon}}\\[0.4cm] % Title of your document
+\HRule \\[1.5cm]
+ 
+\textbf{\Sexpr{patho$Annee[1]}}\\[2cm] 
+
+\vfill 
+
+\end{titlepage}
+% \listoftables
+% \listoffigures
+% \clearpage
+% \tableofcontents
+% \clearpage
+
+\section{Profil épidémiologie}
+\subsection{La distribution du nombre de consultations par structure sanitaire}
+<<ta0,echo=FALSE,message=FALSE,warning=FALSE>>=
+# Statistical analysis
+  data0<-patho
+  month.french <- c("Janvier", "Fevrier", "Mars", "Avril", "Mai", "Juin", 
+    "Juillet", "Aout", "Septembre", "Octobre", "Novembre", "Decembre") 
+  data0$Mois <- factor(data0$Mois, levels=month.french)
+  data0$Age <- factor(data0$Age, levels=c('0-11 mois','1-4 ans','5-14 ans',
+    '15-49 ans','>49 ans'))
+  data0$Maladies <- iconv(data0$Maladies, from = "UTF-8", to = "WINDOWS-1252")
+  
+  # Nombre consulations par departements   
+  N.cons=sum(as.numeric(as.character(data0$Effectif)),na.rm=TRUE)
+  data1<-data0
+  data1$Nom1 <- paste(data0$Etablissement, data0$Nom, sep=' ')
+  
+  TabNom<-ddply(data1,.(Nom1),here(summarise),
+    freq=sum(as.numeric(as.character(Effectif)),na.rm=TRUE),pour=100*(freq/N.cons))
+  names(TabNom) <- c('Nom','Effectif','Pourcentage')
+  TabNom <- TabNom[order(TabNom [,dim(TabNom)[2]],decreasing=T),]  
+@
+<<tab,results='asis',echo=FALSE,message=FALSE,>>=
+library(xtable)
+tab <- xtable((TabNom),
+caption="Nombre de consultations par structure sanitaire",
+label="tab",digits=2)
+print(tab,include.rownames = FALSE,scalebox=0.95)
+@
+
+\clearpage
+\subsection{Les 25 principales causes de morbidité}
+<<ta1,echo=FALSE,message=FALSE,warning=FALSE>>=
+TabDept0<-ddply(data0,.(Maladies,Departement),summarise,
+    freq=sum(as.numeric(as.character(Effectif)),na.rm=TRUE))
+  
+  TabDept1<-cast(TabDept0[!is.na(TabDept0$Maladies),],Maladies~Departement,value="freq",sum,
+    margins=TRUE,na.rm=TRUE)
+  names(TabDept1)[ncol(TabDept1)]<-'Total'
+  levels(TabDept1$Maladies)[nrow(TabDept1)]<-'Total'
+  TabDept1a<-TabDept1[1:(nrow(TabDept1)-1), ]
+  TabDept1a<-TabDept1a[order(TabDept1a[,dim(TabDept1a)[2]],decreasing=T),]
+  TabDept1a<-TabDept1a[1:25, ]
+  TabDept1b<-TabDept1[nrow(TabDept1), ]
+  TabDept1c<-rbind(TabDept1a,TabDept1b)
+@
+<<tab0,results='asis',echo=FALSE,message=FALSE>>=
+tab0 <- xtable((TabDept1c),
+caption="Les 25 principales causes de morbidité par département sanitaire",
+label="tab0",digits=0)
+print(tab0,include.rownames = FALSE)
+@
+\textcolor{blue}{Remarque}: La derniére ligne de la table 2 correspondant au total prend aussi en compte les autres pathologies non citées. Il en est de meme pour tous les tables dans cette section.
+ 
+\clearpage
+<<ta2,echo=FALSE,message=FALSE,warning=FALSE>>=
+TabDept2<-ddply(data0,.(Maladies,Etablissement),summarise,
+    freq=sum(as.numeric(as.character(Effectif)),na.rm=TRUE))
+  
+  TabDept3<-cast(TabDept2[!is.na(TabDept2$Maladies),],Maladies~Etablissement,value="freq",sum,
+    margins=TRUE,na.rm=TRUE)
+  names(TabDept3)[ncol(TabDept3)]<-'Total'
+  levels(TabDept3$Maladies)[nrow(TabDept3)]<-'Total'
+  TabDept3a<-TabDept3[1:(nrow(TabDept3)-1), ]
+  TabDept3a<-TabDept3a[order(TabDept3a[,dim(TabDept3a)[2]],decreasing=T),]
+  TabDept3a<-TabDept3a[1:25, ]
+  TabDept3b<-TabDept3[nrow(TabDept3), ]
+  TabDept3c<-rbind(TabDept3a,TabDept3b)
+@
+<<tab1,results='asis',echo=FALSE,message=FALSE>>=
+tab1 <- xtable((TabDept3c),
+caption="Les 25 principales causes de morbidité par type structures sanitaires",
+label="tab1",digits=0)
+print(tab1,floating.environment='sidewaystable',include.rownames = FALSE)
+@
+
+\clearpage
+<<ta3,echo=FALSE,message=FALSE,warning=FALSE>>=
+TabDept4<-ddply(data0,.(Maladies,Age),summarise,
+    freq=sum(as.numeric(as.character(Effectif)),na.rm=TRUE))
+  
+  TabDept5<-cast(TabDept4[!is.na(TabDept4$Maladies),],Maladies~Age,value="freq",sum,
+    margins=TRUE,na.rm=TRUE)
+  names(TabDept5)[ncol(TabDept5)]<-'Total'
+  levels(TabDept5$Maladies)[nrow(TabDept5)]<-'Total'
+  TabDept5a<-TabDept5[1:(nrow(TabDept5)-1), ]
+  TabDept5a<-TabDept5a[order(TabDept5a[,dim(TabDept5a)[2]],decreasing=T),]
+  TabDept5a<-TabDept5a[1:25, ]
+  TabDept5b<-TabDept5[nrow(TabDept5), ]
+  TabDept5c<-rbind(TabDept5a,TabDept5b)
+  
+@
+<<tab2,results='asis',echo=FALSE,message=FALSE>>=
+tab2 <- xtable((TabDept5c),
+caption="Les 25 principales causes de morbidité par catégorie d'ages",
+label="tab2",digits=0)
+print(tab2,floating.environment='sidewaystable',include.rownames = FALSE)
+@
+
+\clearpage
+<<ta4,echo=FALSE,message=FALSE,warning=FALSE>>=
+TabDept6<-ddply(data0,.(Maladies,Sexe),summarise,
+    freq=sum(as.numeric(as.character(Effectif)),na.rm=TRUE))
+  
+  TabDept7<-cast(TabDept6[!is.na(TabDept6$Maladies),],Maladies~Sexe,value="freq",sum,
+    margins=TRUE,na.rm=TRUE)
+  names(TabDept7)[ncol(TabDept7)]<-'Total'
+  names(TabDept7)[c(2,3)] <- c('Femme','Homme')
+  levels(TabDept7$Maladies)[nrow(TabDept7)]<-'Total'
+  TabDept7a<-TabDept7[1:(nrow(TabDept7)-1), ]
+  TabDept7a<-TabDept7a[order(TabDept7a[,dim(TabDept7a)[2]],decreasing=T),]
+  TabDept7a<-TabDept7a[1:25, ]
+  TabDept7b<-TabDept7[nrow(TabDept7), ]
+  TabDept7c<-rbind(TabDept7a,TabDept7b)
+@
+<<tab3,results='asis',echo=FALSE,message=FALSE>>=
+tab3 <- xtable((TabDept7c),
+caption="Les 25 principales causes de morbidité par sexe",
+label="tab3",digits=0)
+print(tab3, include.rownames = FALSE)
+@
+
+\clearpage
+\section{Saisonalité des pathologies}
+\subsection{Pathologies infectieuses et parasitaires}
+<<F1, echo=FALSE,warning=FALSE>>=
+data2 <- subset(data0, Domaine == "Infect")
+  data2$Mois <- factor(substr(data2$Mois, 1, 4), levels = substr(month.french,1,4))
+  
+  ### Recherche les 10 maladies communicables
+  TabSais0 <- ddply(data2,.(Maladies), summarise, 
+    freq=sum(as.numeric(as.character(Effectif)),na.rm=TRUE))
+  TabSais0 <-TabSais0[order(TabSais0[,dim(TabSais0)[2]],decreasing=T),]
+  listPatho <- TabSais0[1:10, 1]
+  
+  ### Saisonalit? les 10 maladies communicables
+  indexPatho <- which(is.element(data2$Maladies, listPatho))
+  TabSais1 <- ddply(data2[indexPatho, ],.(Maladies, Mois), summarise,
+    freq=sum(as.numeric(as.character(Effectif)),na.rm=TRUE))
+  
+  th0 <- theme(
+    panel.border = element_rect(colour="black", fill=NA, size=1),
+    axis.title.x = element_text(colour="black", size=14, face="bold"),
+    axis.text.x = element_text(colour="black", size=10, face="bold"),
+    axis.title.y = element_text(colour="black", size=14, face="bold"),
+    axis.text.y = element_text(colour="black", size=10, face="bold"))
+  th1<- theme(
+    legend.background = element_rect(fill=NA, colour="black", size=1),
+    legend.title = element_text(colour="black", face="bold", size=14),
+    legend.text = element_text(colour="black", face="bold", size=12))
+  
+  
+  p1 <- ggplot(data = TabSais1, aes(x = Mois, y = freq, group=Maladies, color = Maladies)) + 
+    geom_line(stat="identity") + xlab('Mois')+
+    ylab('Nombre de cas (n)')+labs(color = 'Pathologies')+th0+th1
+  
+@
+<<Fig1, echo=FALSE, fig.show='asis', fig.align='center', fig.height=5, fig.width=12.95, fig.env='figure',    fig.cap="Saisonalité des 10 premiéres maladies infectieuses et parasitaires au cours de l'année",fig.pos='!htbp',message=FALSE>>=
+p1
+@
+<<Fi2,echo=FALSE,results='asis',warning=FALSE>>=
+data3 <- data0
+  data3$Trim <- rep('Jan-Mar', dim(data3)[1])
+  indexTrim2 <- which(is.element(data3$Mois,c('Avril','Mai','Juin')))
+  indexTrim3 <- which(is.element(data3$Mois,c('Juillet','Aout','Septembre')))
+  indexTrim4 <- which(is.element(data3$Mois,c('Octobre','Novembre','Decembre')))
+  data3$Trim[indexTrim2] <- 'Avr-Jui'
+  data3$Trim[indexTrim3] <- 'Juil-Sep'
+  data3$Trim[indexTrim4] <- 'Oct-Dec'
+  data3$Trim <- factor(data3$Trim, levels=c('Jan-Mar','Avr-Jui','Juil-Sep','Oct-Dec'))
+  
+  listPatho2 <-'^Paludisme|^SIDA|^Tuberculose|^Diarrh.e'
+  indexPatho2 <- grep(listPatho2, data3$Maladies)
+  TabSais2 <<- ddply(data3[indexPatho2, ],.(Departement, Maladies, Trim), summarise,
+    freq=sum(as.numeric(as.character(Effectif)),na.rm=TRUE))
+  col1<-brewer.pal(9, "YlGn")
+  
+  p2 <- ggplot(data = TabSais2, aes(x=Trim, y=freq, ymax=max(TabSais2$freq)+100,fill=Maladies)) + 
+    geom_bar(stat="identity",position="dodge") + xlab("Trimestre")+ylab('Nombre de cas (n)')+
+    labs(fill='Pathologies')+th0+th1+scale_fill_manual(values=col1[c(1,3,5,7,9)])+
+    geom_text(aes(label=freq),position=position_dodge(.9), vjust=-0.5,size=4)+
+    facet_grid(Departement~.)
+@
+<<Fig2,echo=FALSE,fig.show='asis',fig.align='center', fig.width=11.6,out.width="1.1\\linewidth",fig.env='figure',fig.cap="Saisonalité du paludisme, SIDA, diarrhée aigue, gastro-entérite, et tuberculoses toutes formes par département au cours de l'année",fig.pos='!htbp',message=FALSE>>=
+p2
+@
+<<Fi3,echo=FALSE,warning=FALSE>>=
+TabSais3 <<- ddply(data3[indexPatho2, ],.(Etablissement, Maladies, Trim), summarise,
+    freq=sum(as.numeric(as.character(Effectif)),na.rm=TRUE))
+  TabSais3a <<-TabSais3[grep('^Paludisme|^Diarrh.e',TabSais3$Maladies),]
+  p3 <- ggplot(data = TabSais3a, aes(x=Trim, y=freq, ymax=max(TabSais3a$freq)+100)) + 
+    geom_bar(stat="identity",fill='lightblue') + xlab("Trimestre")+ylab('Nombre de cas (n)')+
+    th0+th1+geom_text(aes(label=freq), vjust=-0.5,size=4)+
+    facet_grid(Maladies~Etablissement)
+@
+<<Fig3,echo=FALSE,fig.show='asis',fig.align='center',fig.height=8, fig.width=14,out.width="1.4\\linewidth",fig.env='figure',fig.cap="Saisonalité de la diarrhée aigue, gastro-entérite et du paludisme par structures de santé au cours de l'année",fig.pos='!htbp',out.extra='angle=90',message=FALSE>>=
+p3
+@
+<<Fi4,echo=FALSE,message=FALSE,warning=FALSE,cache=FALSE>>=
+TabSida1 <<- ddply(data3[indexPatho2, ],.(Maladies,Sexe,Age), summarise, 
+    freq=sum(as.numeric(as.character(Effectif)),na.rm=TRUE))
+  TabSida1a <<- TabSida1[grep('^SIDA',TabSida1$Maladies),]
+  TabSida1a$Sexe[TabSida1a$Sexe=='F'] <- 'Femme'
+  TabSida1a$Sexe[TabSida1a$Sexe=='M'] <- 'Homme'
+  
+  
+  p4 <- ggplot(data = TabSida1a, aes(x=Age, y=freq, ymax=max(TabSida1a$freq)+10, fill=Sexe)) + 
+    geom_bar(stat="identity",position="dodge") + xlab("Age")+ylab('Nombre de cas (n)')+
+    labs(fill='Sexe')+th0+th1+scale_fill_manual(values=col1[c(3,9)])+
+    geom_text(aes(label=freq),position=position_dodge(.9), vjust=-0.5,size=4)+
+    theme(legend.position="top")
+@
+<<Fig4,echo=FALSE,fig.show='asis',fig.align='center', fig.width=11.6,out.width="1.2\\linewidth",fig.env='figure',fig.cap="Distribution du SIDA selon l'age et le sexe dans l'année",fig.pos='t',message=FALSE>>=
+p4
+@
+
+
+\subsection{Autres pathologies}
+\subsubsection{Pathologies non-communicables}
+<<ta14,echo=FALSE,warning=FALSE>>=
+listPatho3 <- '^Hypertension art|^Diab.te'
+  indexPatho3 <- grep(listPatho3, data3$Maladies)
+  TabSais4 <- ddply(data3[indexPatho3, ],.(Departement, Maladies, Trim), summarise,
+    freq=sum(as.numeric(as.character(Effectif)),na.rm=TRUE))
+  TabSais4a <-cast(TabSais4,Maladies~Trim|Departement,value="freq",sum,
+    margins=TRUE,na.rm=TRUE)
+  
+  TabSais5 <- ddply(data3[indexPatho3, ],.(Maladies, Mois), summarise,
+    freq=sum(as.numeric(as.character(Effectif)),na.rm=TRUE))
+  TabSais5$Mois <-  factor(substr(TabSais5$Mois, 1, 4), levels = substr(month.french,1,4))  
+  
+  p5 <- ggplot(data = TabSais5, aes(x = Mois, y = freq, group=Maladies,  
+    color = Maladies)) + geom_line(stat="identity") + xlab('Mois')+
+    ylab('Nombre de cas (n)')+labs(color = 'Pathologies')+th0+th1+theme(legend.position="top")
+@
+<<tab4,results='asis',echo=FALSE,message=FALSE>>=
+for (i in 1:length(TabSais4a)){
+  print(xtable((as.data.frame(TabSais4a[[i]])),
+  caption=paste(paste('Département',names(TabSais4a)[i],sep=' '),"Saisonalité du Diabéte et l'hypertension artérielle durant l'année",sep=': '),
+  label="tab4",digits=0),include.rownames = FALSE) 
+}
+@
+
+<<Fig5, echo=FALSE, fig.show='asis', fig.align='center', fig.width=11.6,out.width="1.1\\linewidth", fig.env='figure', fig.cap="Saisonalité du diabéte et l'hypertension artérielle durant l'année",fig.pos='!htbp',message=FALSE>>=
+p5
+@
+\clearpage
+\subsubsection{Pathologies respiratoires}
+<<tb5,echo=FALSE,warning=FALSE>>=
+listPatho4 <- '^Bronchite|^Grippe|^Rhinite'
+  indexPatho4 <- grep(listPatho4, data3$Maladies)
+  TabSais6 <- ddply(data3[indexPatho4, ],.(Etablissement, Maladies, Trim), summarise,
+    freq=sum(as.numeric(as.character(Effectif)),na.rm=TRUE))
+  TabSais6a <-cast(TabSais6,Maladies~Trim|Etablissement,value="freq",sum,
+    margins=TRUE,na.rm=TRUE)
+  
+  TabSais7 <<- ddply(data3[indexPatho4, ],.(Maladies, Age), summarise,
+    freq=sum(as.numeric(as.character(Effectif)),na.rm=TRUE))
+  p6 <- ggplot(data = TabSais7, aes(x=Age, y=freq, ymax=max(TabSais7$freq)+50, fill=Age)) + 
+    geom_bar(stat="identity",position="dodge") + xlab("Age")+ylab('Nombre de cas (n)')+
+    th0+th1+scale_fill_manual(values=col1[c(1,3,5,7,9)])+
+    geom_text(aes(label=freq),position=position_dodge(.9), vjust=-0.5,size=4)+
+    theme(legend.position="top",axis.text.x = element_blank())+facet_grid(.~Maladies)
+  
+@
+<<tab5,results='asis',echo=FALSE,message=FALSE>>=
+for (i in 1:length(TabSais6a)){
+  print(xtable((as.data.frame(TabSais6a[[i]])),
+  caption=paste(names(TabSais6a)[i],"Saisonalité de la grippe, bronchite et la rhinite durant l'année",sep=': '),
+  label="tab5",digits=0),include.rownames = FALSE) 
+}
+@
+
+<<Fig6, echo=FALSE, fig.show='asis', fig.align='center', fig.height=5, fig.width=11,out.width="1.25\\linewidth", fig.env='figure', fig.cap="Distribution des cas de grippe, bronchite et de rhinites durant l'année",fig.pos='!htbp',message=FALSE>>=
+p6
+@
+
+
+
+\clearpage
+\section{Indicateurs de santé publique}
+\subsection{Santé maternité}
+\subsection{Santé infantile}
+\subsection{Vaccination}
+
+
+
+
+
+\end{document}
