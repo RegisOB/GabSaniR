@@ -356,7 +356,10 @@ InfoSaniR_extract<-function(Year,health){
       cat("...Extraction des données de Santé Maternité Infantile:", namestruc[i], "\n")
       j <- 1
       while (j <= 12) {
-      
+        time.j <- Sys.time()
+        data <- read.xlsx(file.path(fileInput, FileCenter[i]), colNames = F, sheet = IndexFeuil[j], 
+          , startRow = 206)
+        data <- data[c(1, 2, 6:8, 10:19), c(1, 8, 14, 20)]
         colnames(data) <- c("Type_Accouchement", "Domicile", "Infrastructure", "Autre")
         data_bis <- melt(data, id = "Type_Accouchement")
         colnames(data_bis) <- c("Type_Accouchement", "Lieu", "Effectif")
@@ -382,18 +385,19 @@ InfoSaniR_extract<-function(Year,health){
     # Exportation des donées vers une table Excel/RData
     data_merge = do.call("rbind", data_final)
     last_data <- na.omit(data_merge)
-    last_dataA <- last_data
-    save(last_dataA, file = file.path(fileOutput,paste(paste('Data_accouch1', year[1], sep='_'),'RData',sep='.')))
+    accouch1 <- last_data
+    save(accouch1, file = file.path(fileOutput,paste(paste('data_accouch1', year[1], sep='_'),'RData',sep='.')))
     last_data1 <- last_data
     last_data1$Type_Accouchement <- iconv(last_data1$Type_Accouchement, from = "UTF-8", to = "WINDOWS-1252")
     
-    # Desactivation du package
-    detach("package:openxlsx", unload = TRUE)
-    
-    library(xlsx)
-    write.xlsx2(last_data1, file = file.path(fileOutput,paste(paste('Data_patho', year[1], sep='_'),'xlsx', sep='.')), row.names = F)
-    
-    detach("package:xlsx", unload = TRUE)
+#     # Desactivation du package
+#     detach("package:openxlsx", unload = TRUE)
+#     
+#     library(xlsx)
+#     write.xlsx2(last_data1, file = file.path(fileOutput,paste(paste('data_accouch1', year[1], sep='_')
+#       ,'xlsx', sep='.')), row.names = F)
+#     
+#     detach("package:xlsx", unload = TRUE)
     return(last_data)    
   }
   
@@ -442,17 +446,18 @@ InfoSaniR_extract<-function(Year,health){
     # Exportation des données vers une table Excel/RData
     data_merge = do.call("rbind", data_final)
     last_data <- na.omit(data_merge)
-    last_dataB <-last_data
-    save(last_dataB, file = paste(fileOutput,paste(paste('/Data_accouch2', year[1], sep='_'),'RData',sep='.'),sep=''))
+    accouch2 <-last_data
+    save(accouch2, file = file.path(fileOutput,paste(paste('data_accouch2', year[1], sep='_'),'RData',sep='.')))
     last_data1 <- last_data
     last_data1$Naissance <- iconv(last_data1$Naissance, from = "UTF-8", to = "WINDOWS-1252")
     
-    # Desactivation du package
-    detach("package:openxlsx", unload = TRUE)
-    
-    library(xlsx)
-    write.xlsx2(last_data1, file = paste(fileOutput,paste(paste('/Data_patho', year[1], sep='_'),'xlsx',sep='.'),sep=''), row.names = F)
-    detach("package:xlsx", unload = TRUE)
+#     # Desactivation du package
+#     detach("package:openxlsx", unload = TRUE)
+#     
+#     library(xlsx)
+#     write.xlsx2(last_data1, file = paste(fileOutput,paste(paste('/Data_patho', year[1], sep='_'),
+#       'xlsx',sep='.'),sep=''), row.names = F)
+#     detach("package:xlsx", unload = TRUE)
     
     return(last_data)
   } 
@@ -483,7 +488,8 @@ InfoSaniR_extract<-function(Year,health){
         data_bis$Nom <- namestruc[i]
         data_bis$Departement <- nameDept2[i]
         data_bis$Etablissement <- Centertype[i]
-        data_final[[k]] <- data_bis[, c("Province", "Region_Sanitaire", "Departement", "Etablissement", "Nom", "Annee", "Mois", "Depistage", 
+        data_final[[k]] <- data_bis[, c("Province", "Region_Sanitaire", "Departement", "Etablissement", 
+          "Nom", "Annee", "Mois", "Depistage", 
           "Age_Mois", "Effectif")]
         rmtm <- round((length(FileCenter) * 12 - (i - 1) * 12 - j) * (difftime(Sys.time(), time.j, units = "mins")), 1)
         cat("... Extraction des données du mois: ", month.french[j], "...estimation du temps restant:", rmtm, "minutes \n")
@@ -497,18 +503,18 @@ InfoSaniR_extract<-function(Year,health){
     # Exportation des données vers une table Excel/RData
     data_merge = do.call("rbind", data_final)
     last_data <- na.omit(data_merge)
-    last_dataC <- last_data
-    save(last_dataC, file = paste(fileOutput,paste(paste('/Data_malnu', year[1], sep='_'),'RData',sep='.'),sep=''))
+    malnu <- last_data
+    save(malnu, file = paste(fileOutput,paste(paste('/data_malnu', year[1], sep='_'),'RData',sep='.'),sep=''))
     last_data1 <- last_data
     last_data1$Depistage <- iconv(last_data1$Depistage, from = "UTF-8", to = "WINDOWS-1252")
     
-    # Desactivation du package
-    detach("package:openxlsx", unload = TRUE)
-    
-    library(xlsx)
-    write.xlsx(last_data1, file = paste(fileOutput,paste(paste('/Data_malnu', year[1], sep='_'),'xlsx',sep='.'),
-      sep=''), row.names = F)
-    detach("package:xlsx", unload = TRUE)
+#     # Desactivation du package
+#     detach("package:openxlsx", unload = TRUE)
+#     
+#     library(xlsx)
+#     write.xlsx(last_data1, file = paste(fileOutput,paste(paste('/data_malnu', year[1], sep='_'),'xlsx',sep='.'),
+#       sep=''), row.names = F)
+#     detach("package:xlsx", unload = TRUE)
     
     return(last_data)
   } 
@@ -551,18 +557,19 @@ InfoSaniR_extract<-function(Year,health){
     # Exportation des don?es vers une table Excel/RData
     data_merge = do.call("rbind", data_final)
     last_data <- na.omit(data_merge)
-    last_dataD <- last_data
-    save(last_dataD, file = paste(fileOutput,paste(paste('/Data_vac', year[1], sep='_'),'RData',sep='.'),sep=''))
+    vac <- last_data
+    save(vac, file = paste(fileOutput,paste(paste('/data_vac', year[1], sep='_'),'RData',sep='.'),sep=''))
     last_data1 <- last_data
     last_data1$Antigene <- iconv(last_data1$Antigene, from = "UTF-8", to = "WINDOWS-1252")
     
-    # Desactivation du package
-    detach("package:openxlsx", unload = TRUE)
-    
-    library(xlsx)
-    write.xlsx(last_data1, file = paste(fileOutput,paste(paste('/Data_vac', year[1], sep='_'),'xlsx',sep='.'),sep=''), 
-      row.names = F)
-    detach("package:xlsx", unload = TRUE)
+#     # Desactivation du package
+#     detach("package:openxlsx", unload = TRUE)
+#     
+#     library(xlsx)
+#     write.xlsx(last_data1, file = paste(fileOutput,paste(paste('/Data_vac', year[1], sep='_'),
+#       'xlsx',sep='.'),sep=''), 
+#       row.names = F)
+#     detach("package:xlsx", unload = TRUE)
     
     return(last_data)
   }
