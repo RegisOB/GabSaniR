@@ -1,41 +1,41 @@
 InfoSaniR_extract<-function(Year,health){
   
   if (missing(Year)) {
-    stop("Year doit etre spécicifié car manquant")
+    stop("Year doit etre specicifie car manquant")
   }
   if (!is.numeric(Year)) {
-    stop("Year doit etre de type numérique")
+    stop("Year doit etre de type numerique")
   }
   if (Year<2000 | Year>2099) {
     stop("Year doit etre compris entre 2000 et 2099")
   }
   
   if (missing(health)) {
-    stop("Year doit etre spécicifié car manquant")}
+    stop("Year doit etre specicifie car manquant")}
   if (!is.character(health)) {
-    stop("health doit etre un caractère")
+    stop("health doit etre un caractere")
   }    
   if (!is.element(health, c("patho", "accouch1", "accouch2", "malnu", "vac"))) {
-    stop("l'argument health mal spécifié revérifier son orthographe")
+    stop("l'argument health mal specifie reverifier son orthographe")
   }
   
-  #Installing missing packages  
-  packages <- c("reshape", "stringr", "openxlsx","xlsx")
-  if (length(setdiff(packages, rownames(installed.packages()))) > 0) {
-    install.packages(setdiff(packages, rownames(installed.packages())))
-  }
-  
-  #Loading packages
-  library(reshape)
-  library(stringr)
-  library(openxlsx)
+#   #Installing missing packages  
+#   packages <- c("reshape", "stringr", "openxlsx","xlsx")
+#   if (length(setdiff(packages, rownames(installed.packages()))) > 0) {
+#     install.packages(setdiff(packages, rownames(installed.packages())))
+#   }
+#   
+#   #Loading packages
+#   library(reshape)
+#   library(stringr)
+#   library(openxlsx)
   
   # Choosing a folder interactively
   fileInput <- choose.dir(default = "", 
-                caption = "Le dossier données xlsx InfoSani")
+                caption = "Le dossier donnees xlsx InfoSani")
   
   fileOutput <- choose.dir(default = "", 
-                caption = "Le dossier données exportées") 
+                caption = "Le dossier donnees exportees") 
   
   # Extraction de la liste fichiers InfoSani 
   FileCenter <- list.files(path=fileInput)
@@ -50,9 +50,9 @@ InfoSaniR_extract<-function(Year,health){
     ext.fichier <- str_detect(FileCenter, ".xlsx")
     struc.fichier <- str_count(FileCenter, "_")
     if (sum(ext.fichier) != length(FileCenter)) {
-      cat("Le(s) fichier(s) ci-dessous n'est(sont) pas au format excel version 2007 minimum requis:", "\n")
+      cat("Le(s) fichier(s) ci-dessous n est(sont) pas au format excel version 2007 minimum requis:", "\n")
       print(FileCenter[!str_detect(FileCenter, ".xlsx")])
-      stop("Veuillez retirer ce(s) fichier(s) du dossier des données avant de continuer svp")
+      stop("Veuillez retirer ce(s) fichier(s) du dossier des donnees avant de continuer svp")
     } else {
       if (sum(struc.fichier == 5 | struc.fichier == 6) != length(FileCenter)) {
         cat("Le(s) nom(s) de(s) fichier(s) ci-dessous n'est(sont) pas structuré(s) correctement", "\n")
@@ -69,11 +69,11 @@ InfoSaniR_extract<-function(Year,health){
   # Vérification des noms des provinces
   prov_bad <- FileCenter[!is.element(nameprov, prov)]
   if (length(prov_bad) > 0) {
-    cat("Le(s) nom(s) de provinces de(s) fichier(s) ci-dessous sont mal orthographiés:", "\n")
+    cat("Le(s) nom(s) de provinces de(s) fichier(s) ci-dessous sont mal orthographies:", "\n")
     print(prov_bad)
     stop("Veuillez corriger avant de continuer svp")
   }
-  # Définition provinces
+  # Definition provinces
   nameprov2 <- rep("Estuaire", length(nameprov))
   nameprov2[str_detect(nameprov, "HOG")] <- "Haut-Ogooué"
   nameprov2[str_detect(nameprov, "MOG")] <- "Moyen-Ogooué"
@@ -93,12 +93,12 @@ InfoSaniR_extract<-function(Year,health){
   # Vérification des noms des provinces
   reg_bad <- FileCenter[!is.element(namereg, reg)]
   if (length(reg_bad) > 0) {
-    cat("Le(s) nom(s) de(s) région(s) sanitaire(s) de(s) fichier(s) ci-dessous sont mal orthographiés:", "\n")
+    cat("Le(s) nom(s) de(s) region(s) sanitaire(s) de(s) fichier(s) ci-dessous sont mal orthographies:", "\n")
     print(reg_bad)
     stop("Veuillez corriger avant de continuer svp")
   } 
   
-  #Définition regions sanitaires
+  #Definition regions sanitaires
   namereg2 <- rep("Libreville-Owendo", length(namereg))
   namereg2[str_detect(namereg, "OUE")] <- "Ouest"
   namereg2[str_detect(namereg, "SUDE")] <- "Sud-Est"
@@ -132,7 +132,7 @@ InfoSaniR_extract<-function(Year,health){
     stop("Veuillez corriger avant de continuer svp")
   } 
   
-  # Définition départements
+  # Definition departements
   nameDept2 <- rep("Libreville 1", length(nameDept))
   nameDept2[str_detect(nameDept, "LBV2")] <- "Libreville 2"
   nameDept2[str_detect(nameDept, "LBV3")] <- "Libreville 3"
@@ -265,18 +265,16 @@ InfoSaniR_extract<-function(Year,health){
   
   ##########################################################################################################
   if (health == 'patho'){
-    detach("package:openxlsx", unload=TRUE)
-    library(xlsx)
     
     ## Extraction des données de pathologies Extraction des données de tous les
     ## établissements de Santé
     sheetlist <- c(2, 3, 4, 6, 7, 8, 10, 11, 12, 14, 15, 16)
-    indextab <- data.frame(strow = c(1, 54, 73, 80, 126, 127, 133, 159, 186, 211, 
-      224, 243, 282, 301, 323, 343, 355, 366, 370, 371, 378, 400, 435, 443))
-    indextab$enrow <- c(50, 65, 76, 121, 126, 132, 155, 178, 207, 220, 235, 278, 
-      293, 319, 339, 347, 365, 369, 370, 374, 392, 431, 439, 449)
-    indextab$coldeas <- c(2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 
-      2, 4, 2, 2, 2, 2)
+    indextab <- data.frame(strow = c(1, 52, 69, 74,  120, 121, 127, 151, 176, 199, 210,
+      227, 264, 281, 301, 319, 329, 340, 344, 345, 350, 370, 403, 409))
+    indextab$enrow <- c(50, 63, 72, 115, 120, 126, 149, 170, 197, 208, 221,
+      262, 275, 299, 317, 323, 339, 343, 344, 348, 364, 401, 407, 415)
+    indextab$coldeas <- c(2, 2, 2, 2, 2, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 
+      2, 3, 2, 2, 2, 2)
     
     tab0 <- vector("list", length(FileCenter))
     tab1 <- vector("list", length(sheetlist) * dim(indextab)[1])
@@ -286,11 +284,11 @@ InfoSaniR_extract<-function(Year,health){
       cat("...Extraction des données de pathologies:", namestruc[k], "\n")
       
       for (i in 1:12) {
-        sheet<- read.xlsx(file.path(fileInput, FileCenter[k]), sheetIndex = sheetlist[i], 
-          startRow=556,endRow=1004, colIndex=c(1:27), header = FALSE)
+        sheet<- read.xlsx(file.path(fileInput, FileCenter[k]), sheet = sheetlist[i], 
+          startRow=556, colNames=F)
         for (j in 1:24) {
           tab1[[((i - 1) * 24 + j)]] <- sheet[c(indextab[j, 1]:indextab[j, 2]),
-            c(1, indextab[j, 3], 8:27)]
+            c(1, indextab[j, 3],4:23)]
           names(tab1[[((i - 1) * 24 + j)]]) <- c("Code_Maladie", "Maladies", "0_CAS_M", 
             "0_CAS_F", "0_DCD_M", "0_DCD_F", "1_CAS_M", "1_CAS_F", "1_DCD_M", "1_DCD_F",
             "5_CAS_M", "5_CAS_F", "5_DCD_M", "5_DCD_F", "15_CAS_M", "15_CAS_F", "15_DCD_M", 
@@ -325,28 +323,27 @@ InfoSaniR_extract<-function(Year,health){
       cat("Fin d'extraction des données!\n")
     } 
     tabfinal <- do.call(rbind,tab0)
-    tabfinal1 <- tabfinal[!missing(tabfinal$value),]
+    tabfinal1 <- tabfinal[!is.na(tabfinal$value),]
     
     #Exportation des donées vers une table Excel/RData
     ##################################################
-    tabfinal2 <- tabfinal1
-    tabfinal2$Age <- factor(tabfinal2$Age)
-    tabfinal2$Maladies <- as.character(tabfinal2$Maladies)
-    levels(tabfinal2$Age) <- c("0-11 mois", "1-4 ans", "15-49 ans", "5-14 ans", ">49 ans")
-    tabfinal2$Age <- factor(tabfinal2$Age, 
+    patho <- tabfinal1
+    patho$Age <- factor(patho$Age)
+    patho$Maladies <- as.character(patho$Maladies)
+    levels(patho$Age) <- c("0-11 mois", "1-4 ans", "15-49 ans", "5-14 ans", ">49 ans")
+    patho$Age <- factor(patho$Age, 
       levels=c('0-11 mois','1-4 ans','5-14 ans','15-49 ans','>49 ans'))
-    names(tabfinal2)[15] <- "Effectif"
-    tabfinal3 <- tabfinal2
+    names(patho)[15] <- "Effectif"
+    tabfinal3 <- patho
     tabfinal3$Maladies <- iconv(tabfinal3$Maladies, from = "UTF-8", to = "WINDOWS-1252")  
-    save(ls = "tabfinal2", file = file.path(fileOutput,paste(paste('Data_patho', year[1], sep='_'),'RData',sep='.')))
-    write.xlsx2(as.data.frame(tabfinal3), file = file.path(fileOutput,paste(paste('Data_patho', year[1], 
-      sep='_'),'xlsx',sep='.')),row.names = F)
+    save(ls = "patho", file = file.path(fileOutput,paste(paste('data_patho', year[1], sep='_'),'RData',sep='.')))
+    #     write.xlsx2(as.data.frame(tabfinal3), file = file.path(fileOutput,paste(paste('data_patho', year[1], 
+    #       sep='_'),'xlsx',sep='.')),row.names = F)
     #Desactivation du package
-    detach("package:xlsx", unload=TRUE)
     
-    return(tabfinal2) 
+    
+    return(patho) 
   }
-  
   
   ##########################################################################################################
   if (health == "accouch1") {
@@ -359,10 +356,7 @@ InfoSaniR_extract<-function(Year,health){
       cat("...Extraction des données de Santé Maternité Infantile:", namestruc[i], "\n")
       j <- 1
       while (j <= 12) {
-        time.j <- Sys.time()
-        data <- read.xlsx(file.path(fileInput, FileCenter[i]), colNames = F, sheet = IndexFeuil[j], 
-          , startRow = 206)
-        data <- data[c(1, 2, 6:8, 10:19), c(1, 8, 14, 20)]
+      
         colnames(data) <- c("Type_Accouchement", "Domicile", "Infrastructure", "Autre")
         data_bis <- melt(data, id = "Type_Accouchement")
         colnames(data_bis) <- c("Type_Accouchement", "Lieu", "Effectif")
