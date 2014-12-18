@@ -18,18 +18,7 @@ InfoSaniR_extract<-function(Year,health){
   if (!is.element(health, c("patho", "accouch1", "accouch2", "malnu", "vac"))) {
     stop("l'argument health mal specifie reverifier son orthographe")
   }
-  
-#   #Installing missing packages  
-#   packages <- c("reshape", "stringr", "openxlsx","xlsx")
-#   if (length(setdiff(packages, rownames(installed.packages()))) > 0) {
-#     install.packages(setdiff(packages, rownames(installed.packages())))
-#   }
-#   
-#   #Loading packages
-#   library(reshape)
-#   library(stringr)
-#   library(openxlsx)
-  
+ 
   # Choosing a folder interactively
   fileInput <- choose.dir(default = "", 
                 caption = "Le dossier donnees xlsx InfoSani")
@@ -334,14 +323,10 @@ InfoSaniR_extract<-function(Year,health){
     patho$Age <- factor(patho$Age, 
       levels=c('0-11 mois','1-4 ans','5-14 ans','15-49 ans','>49 ans'))
     names(patho)[15] <- "Effectif"
-    tabfinal3 <- patho
-    tabfinal3$Maladies <- iconv(tabfinal3$Maladies, from = "UTF-8", to = "WINDOWS-1252")  
     save(ls = "patho", file = file.path(fileOutput,paste(paste('data_patho', year[1], sep='_'),'RData',sep='.')))
-    #     write.xlsx2(as.data.frame(tabfinal3), file = file.path(fileOutput,paste(paste('data_patho', year[1], 
-    #       sep='_'),'xlsx',sep='.')),row.names = F)
-    #Desactivation du package
     
-    
+    write.xlsx(patho, file = file.path(fileOutput,paste(paste('data_patho', year[1], sep='_'),'xlsx',sep='.')),
+      row.names = F)
     return(patho) 
   }
   
@@ -387,17 +372,8 @@ InfoSaniR_extract<-function(Year,health){
     last_data <- na.omit(data_merge)
     accouch1 <- last_data
     save(accouch1, file = file.path(fileOutput,paste(paste('data_accouch1', year[1], sep='_'),'RData',sep='.')))
-    last_data1 <- last_data
-    last_data1$Type_Accouchement <- iconv(last_data1$Type_Accouchement, from = "UTF-8", to = "WINDOWS-1252")
-    
-#     # Desactivation du package
-#     detach("package:openxlsx", unload = TRUE)
-#     
-#     library(xlsx)
-#     write.xlsx2(last_data1, file = file.path(fileOutput,paste(paste('data_accouch1', year[1], sep='_')
-#       ,'xlsx', sep='.')), row.names = F)
-#     
-#     detach("package:xlsx", unload = TRUE)
+    write.xlsx(accouch1, file = file.path(fileOutput,paste(paste('accouch1', year[1], sep='_'),'xlsx',sep='.')),
+      row.names = F)
     return(last_data)    
   }
   
@@ -448,17 +424,8 @@ InfoSaniR_extract<-function(Year,health){
     last_data <- na.omit(data_merge)
     accouch2 <-last_data
     save(accouch2, file = file.path(fileOutput,paste(paste('data_accouch2', year[1], sep='_'),'RData',sep='.')))
-    last_data1 <- last_data
-    last_data1$Naissance <- iconv(last_data1$Naissance, from = "UTF-8", to = "WINDOWS-1252")
-    
-#     # Desactivation du package
-#     detach("package:openxlsx", unload = TRUE)
-#     
-#     library(xlsx)
-#     write.xlsx2(last_data1, file = paste(fileOutput,paste(paste('/Data_patho', year[1], sep='_'),
-#       'xlsx',sep='.'),sep=''), row.names = F)
-#     detach("package:xlsx", unload = TRUE)
-    
+    write.xlsx(accouch1, file = file.path(fileOutput,paste(paste('accouch2', year[1], sep='_'),'xlsx',sep='.')),
+      row.names = F)
     return(last_data)
   } 
   
@@ -505,17 +472,8 @@ InfoSaniR_extract<-function(Year,health){
     last_data <- na.omit(data_merge)
     malnu <- last_data
     save(malnu, file = paste(fileOutput,paste(paste('/data_malnu', year[1], sep='_'),'RData',sep='.'),sep=''))
-    last_data1 <- last_data
-    last_data1$Depistage <- iconv(last_data1$Depistage, from = "UTF-8", to = "WINDOWS-1252")
-    
-#     # Desactivation du package
-#     detach("package:openxlsx", unload = TRUE)
-#     
-#     library(xlsx)
-#     write.xlsx(last_data1, file = paste(fileOutput,paste(paste('/data_malnu', year[1], sep='_'),'xlsx',sep='.'),
-#       sep=''), row.names = F)
-#     detach("package:xlsx", unload = TRUE)
-    
+    write.xlsx(malnu, file = file.path(fileOutput,paste(paste('malnu', year[1], sep='_'),'xlsx',sep='.')),
+      row.names = F)
     return(last_data)
   } 
   ##########################################################################################################
@@ -559,17 +517,8 @@ InfoSaniR_extract<-function(Year,health){
     last_data <- na.omit(data_merge)
     vac <- last_data
     save(vac, file = paste(fileOutput,paste(paste('/data_vac', year[1], sep='_'),'RData',sep='.'),sep=''))
-    last_data1 <- last_data
-    last_data1$Antigene <- iconv(last_data1$Antigene, from = "UTF-8", to = "WINDOWS-1252")
-    
-#     # Desactivation du package
-#     detach("package:openxlsx", unload = TRUE)
-#     
-#     library(xlsx)
-#     write.xlsx(last_data1, file = paste(fileOutput,paste(paste('/Data_vac', year[1], sep='_'),
-#       'xlsx',sep='.'),sep=''), 
-#       row.names = F)
-#     detach("package:xlsx", unload = TRUE)
+    write.xlsx(vac, file = file.path(fileOutput,paste(paste('vac', year[1], sep='_'),'xlsx',sep='.')),
+      row.names = F)
     
     return(last_data)
   }
