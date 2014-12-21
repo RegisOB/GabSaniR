@@ -72,6 +72,7 @@ InfoSaniR_extract<-function(health = "patho", Year = 2000){
   nameprov2[str_detect(nameprov, "OGI")] <- "Ogooué-Ivindo"
   nameprov2[str_detect(nameprov, "OGM")] <- "Ogooué-Maritime"
   nameprov2[str_detect(nameprov, "WON")] <- "Woleu-Ntem" 
+  nameprov2 <- iconv(nameprov2, from = "UTF-8", to = "WINDOWS-1252")
   #Liste des regions sanitaires
   reg<-c('LBVOW','OUE','SUDE','CEN','CENS','SUD','EST','CENE','MARI','NOR')
   namereg<-c()
@@ -97,7 +98,8 @@ InfoSaniR_extract<-function(health = "patho", Year = 2000){
   namereg2[str_detect(namereg, "Est")] <- "Est"
   namereg2[str_detect(namereg, "CENE")] <- "Centre-Est"
   namereg2[str_detect(namereg, "MARI")] <- "Maritime"
-  namereg2[str_detect(namereg, "NOR")] <- "Nord"  
+  namereg2[str_detect(namereg, "NOR")] <- "Nord" 
+  
   
   #Listes des departements
   Dept <- c("LBV1", "LBV2", "LBV3", "KOMOM", "KOMO", 
@@ -181,6 +183,8 @@ InfoSaniR_extract<-function(health = "patho", Year = 2000){
   nameDept2[str_detect(nameDept, "HAUN")] <- "Haut-Ntem"
   nameDept2[str_detect(nameDept, "OKA")] <- "Okano"
   nameDept2[str_detect(nameDept, "HAUC")] <- "Haut-Como"
+  nameDept2 <- iconv(nameDept2, from = "UTF-8", to = "WINDOWS-1252")
+  
   
   #Récupération de type strucutres
   typestruc <- c("DISP", "INF", "CS", "CM", "HOP", "AUT")
@@ -203,6 +207,9 @@ InfoSaniR_extract<-function(health = "patho", Year = 2000){
   Centertype[str_detect(nametypestruc, "CS")] <- "Centre de Santé"
   Centertype[str_detect(nametypestruc, "CM")] <- "Centre Médical"
   Centertype[str_detect(nametypestruc, "HOP")] <- "Hopital" 
+  Centertype <- iconv(Centertype, from = "UTF-8", to = "WINDOWS-1252")
+  
+  
   
   #Récupération des noms de structures
   #Region sanitaire CENTRE:
@@ -219,6 +226,7 @@ InfoSaniR_extract<-function(health = "patho", Year = 2000){
     "Nombakélé", "Makouke", "Ndjolé", "Darlot", 
     "Ebel Abanga Rive Droite", "Minkok Messeng", 
     "SMI Régionale Lambaréné", "CES Modjeckou") 
+  
   namestruc <- c()
   for (i in 1:length(FileCenter)) {
     namestruc[i] <- str_sub(FileCenter[i], start = str_locate_all(FileCenter, "_")[[i]]
@@ -231,6 +239,8 @@ InfoSaniR_extract<-function(health = "patho", Year = 2000){
     print(struc4_bad)
     stop("Veuillez corriger avant de continuer svp")
   } 
+  struc4 <- iconv(struc4, from = "UTF-8", to = "WINDOWS-1252")
+  
   
   # Définition des soins médicaux (consultations ou hospitalisations)
   soin <- rep("Consultation", length(FileCenter))
