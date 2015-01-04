@@ -318,8 +318,19 @@ p6
 
 \clearpage
 \section{Indicateurs de santé publique}
-\subsection{Santé maternité}
-\subsection{Santé infantile}
+\subsection{Santé maternité et infantile}
+Les données issues du fichier Infosani ont permis de décrire les indicateurs suivants:
+\begin{itemize}
+  \item Taux de mortalité maternelle pour 1000 naissances vivantes (TMM)
+  \item Proportion d’accouchements assistés par personnels de santé qualifiés (PAA)
+  \item Taux de mortalité néonatale pour 1000 naissances vivantes (TMN)
+  \item Taux d’enfants vivants prématurés pour 1000 naissances vivantes (TEVP)
+  \item Taux d’enfants malnutris pour 1000 enfants en consultation postnatal (TEM)
+  \item Nombre d’enfants  sous l’allaitement exclusif pendant les 6 premiers mois (NEAE)
+  \item Taux d’enfants nés vivants ayant moins 2500g pour 1000 naissances vivantes (TEV2500)
+\end{itemize}
+
+%\subsection{Santé }
 \subsection{Vaccination}
 
 
