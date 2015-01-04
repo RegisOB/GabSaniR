@@ -34,21 +34,21 @@ Bertrand Lell <bertrand.lell@gmail.com>
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
-##Convertir préalablement les extensions xls en xlsx 
+##Convertir prealablement les extensions xls en xlsx 
 ##les fichiers InfoSani excel
 
 ##Extraire automatiquement les donnees de pathologies en 2012
-##de toutes les structures de santé
+##de toutes les structures de sante
 InfoSaniR_extract(health = 'patho', Year=2012)
 
 ##Extraire automatiquement les donnees sante de maternite infantile en 2012
-##de toutes les structures de santé
+##de toutes les structures de sante
 InfoSaniR_extract(health = 'accouch1', Year=2012)
 InfoSaniR_extract(health = 'accouch2', Year=2012)
 InfoSaniR_extract(health = 'malnu', Year=2012)
 
 ##Extraire automatiquement les donnees sante de vaccination en 2012
-##de toutes les structures de santé
+##de toutes les structures de sante
 InfoSaniR_extract(health = 'vac', Year=2012)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
