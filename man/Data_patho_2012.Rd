@@ -31,6 +31,4 @@
 \references{
 %%  ~~ possibly secondary sources and usages ~~
 }
-\examples{
-data('Data_patho_2012')
-
+\examples{data('Data_patho_2012')}
