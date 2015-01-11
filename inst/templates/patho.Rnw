@@ -330,54 +330,119 @@ Les données issues du fichier Infosani ont permis de décrire les indicateurs s
   \item Taux d’enfants nés vivants ayant moins 2500g (TEV2500) pour 1000 naissances vivantes 
 \end{itemize}
 <<tab6,results='asis',echo=FALSE,message=FALSE,warning=FALSE>>=
-##Data Extraction 
+
+##Table accouchement total
+##########################
 sub_accouch11<-subset(accouch1,grepl('eutociques$|dystociques$',Type_Accouchement))
-sub_accouch112<-ddply(sub_accouch11,.(Mois), summarise,
+sub_accouch11a<-ddply(sub_accouch11,.(Mois), summarise,
                      freq=sum(as.numeric(as.character(Effectif)),na.rm=TRUE))
-sub_accouch12 <- subset(accouch1,grepl('^Nombre de (.*?) maternels|^Accouchements assist.es',Type_Accouchement))
-sub_accouch13 <- subset(accouch2,grepl('^Enfants n.s vivants|pr.matur.s$',Naissance))
+sub_accouch11a$Mois <- factor(substr(sub_accouch11a$Mois, 1, 4), levels = substr(month.french,1,4))
+sub_accouch11b<-cast(sub_accouch11a, .~Mois,value="freq")
+colnames(sub_accouch11b)[1]<-'Indicateurs'
+levels(sub_accouch11b$Indicateurs)[1]<-"Nombre d'accouchements"
 
-##Data manipulation
-sub_accouch112$Mois <- factor(substr(sub_accouch112$Mois, 1, 4), 
-                       levels = substr(month.french,1,4))
-sub_accouch12$Mois <- factor(substr(sub_accouch12$Mois, 1, 4), 
-                       levels = substr(month.french,1,4))
-sub_accouch13$Mois <- factor(substr(sub_accouch13$Mois, 1, 4), 
-                       levels = substr(month.french,1,4))
-sub_accouch12$Effectif <- as.numeric(as.character(sub_accouch12$Effectif))
-sub_accouch13$Effectif <- as.numeric(as.character(sub_accouch13$Effectif))
-
-##Description monthly
-sub_accouch11a<-cast(sub_accouch112, .~Mois,value="freq")
-sub_accouch12a<-cast(sub_accouch12, Type_Accouchement~Mois,value="Effectif", 
-                     sum,margins=F,na.rm=TRUE)
-sub_accouch13a<-cast(sub_accouch13, Naissance~Mois,value="Effectif", 
-                     sum,margins=F,na.rm=TRUE)
-colnames(sub_accouch11a)[1]<-'Indicateurs'
+##Taux de mortalité maternelle (TMM)
+####################################
+sub_accouch12 <- subset(accouch1,grepl('^Nombre de (.*?) maternels',Type_Accouchement))
+sub_accouch12$Mois <- factor(substr(sub_accouch12$Mois, 1, 4), levels = substr(month.french,1,4))
+sub_accouch12a<-cast(sub_accouch12, Type_Accouchement~Mois,value="Effectif")
 colnames(sub_accouch12a)[1]<-'Indicateurs'
+
+sub_accouch12b<-ddply(sub_accouch12,.(Mois), summarise,
+                     freq=sum(as.numeric(as.character(Effectif)),na.rm=TRUE))
+sub_accouch12c<-cast(sub_accouch12b, .~Mois,value="freq")
+colnames(sub_accouch12c)[1]<-'Indicateurs'
+levels(sub_accouch12c$Indicateurs)[1]<-"Nombre de décès maternels"
+
+##Proportion d'accouchments assistées (PAA)
+###########################################
+sub_accouch13 <- subset(accouch1,grepl('^Accouchements assist.es',Type_Accouchement))
+sub_accouch13$Mois <- factor(substr(sub_accouch13$Mois, 1, 4), levels = substr(month.french,1,4))
+sub_accouch13$Effectif <- as.numeric(as.character(sub_accouch13$Effectif))
+sub_accouch13a<-cast(sub_accouch13, Type_Accouchement~Mois,value="Effectif", 
+                     sum,margins=F,na.rm=TRUE)
 colnames(sub_accouch13a)[1]<-'Indicateurs'
 
-data_health <- merge(sub_accouch11a, sub_accouch12a, all=T)
+##Enfants nés vivants 
+#####################
+sub_accouch14 <- subset(accouch2,grepl('^Enfants n.s vivants|pr.matur.s$|terme$|
+                 ^Nombre total|^Nombre de NVN',Naissance))
+sub_accouch14$Mois <- factor(substr(sub_accouch14$Mois, 1, 4), levels = substr(month.french,1,4))
+sub_accouch14$Effectif <- as.numeric(as.character(sub_accouch14$Effectif))
+sub_accouch14a<-ddply(sub_accouch14,.(Mois), summarise,
+                     freq=sum(as.numeric(as.character(Effectif)),na.rm=TRUE))
+sub_accouch14b<-cast(sub_accouch14a, .~Mois,value="freq")
+colnames(sub_accouch14b)[1]<-'Indicateurs'
+levels(sub_accouch14b$Indicateurs)[1]<-"Nombre de naissances vivantes"
+
+##Taux d'enfants vivants prematurés/ayant moins 2500g
+#####################################################
+sub_accouch15 <- cast(sub_accouch14, Naissance~Mois,value="Effectif", 
+                     sum,margins=F,na.rm=TRUE)
+sub_accouch15a <-  subset(sub_accouch15,grepl('^Enfants n.s vivants|pr.matur.s$'
+                   ,Naissance))
+colnames(sub_accouch15a)[1]<-'Indicateurs'
+
+##Taux de mortalité néonatale
+#############################
+sub_accouch16 <- subset(accouch2,grepl('^Enfants morts|^Nombre de fausses|
+  ^enfants DCD|^D.c.s de nouveaux',Naissance))
+sub_accouch16$Mois <- factor(substr(sub_accouch16$Mois, 1, 4), levels = substr(month.french,1,4))
+sub_accouch16$Effectif <- as.numeric(as.character(sub_accouch16$Effectif))
+sub_accouch16a<-cast(sub_accouch16, Naissance~Mois,value="Effectif",sum,margins=F,na.rm=TRUE )
+colnames(sub_accouch16a)[1]<-'Indicateurs'
+
+sub_accouch16b<-ddply(sub_accouch16,.(Mois), summarise,
+                     freq=sum(as.numeric(as.character(Effectif)),na.rm=TRUE))
+sub_accouch16c<-cast(sub_accouch16b, .~Mois,value="freq")
+colnames(sub_accouch16c)[1]<-'Indicateurs'
+levels(sub_accouch16c$Indicateurs)[1]<-"Nombre décès néonatal"
+
+##Taux enfants malnutris/sous allaitement exclusif
+sub_accouch17 <- subset(malnu,grepl('enfants p.s.s$|malnutris d.pist.s$|exclusif$',Depistage))
+sub_accouch17$Mois <- factor(substr(sub_accouch17$Mois, 1, 4), levels = substr(month.french,1,4))
+sub_accouch17$Effectif <- as.numeric(as.character(sub_accouch17$Effectif))
+sub_accouch17a<-cast(sub_accouch17, Depistage~Mois,value="Effectif",sum,margins=F,na.rm=F )
+colnames(sub_accouch17a)[1]<-'Indicateurs'
+
+##Table final des indicateurs
+data_health <- merge(sub_accouch11b, sub_accouch12c, all=T)
 data_health <- merge(data_health, sub_accouch13a, all=T)
+data_health <- merge(data_health, sub_accouch14b, all=T)
+data_health <- merge(data_health, sub_accouch15a, all=T)
+data_health <- merge(data_health, sub_accouch16c, all=T)
+data_health <- merge(data_health, sub_accouch17a[3:1,], all=T)
+data_health<-data_health[,c('Indicateurs',substr(month.french,1,4))]
 data_health[is.na(data_health)] <- 0
 
-##Indicator tables
-tx1000<-function(x){round(1000*x/x[1],2)}
-tx100<-function(x){round(100*x/x[1],2)}
-Indicator_health1<-apply(data_health[c(1,3:5),2:13],2,tx1000)
-Indicator_health2<-apply(data_health[c(1,2),2:13],2,tx100)
-Indicator_health <- rbind (Indicator_health1[2:4,], Indicator_health2[2,])
-Indicator_health <- rbind (sub_accouch11a[,2:13], Indicator_health)
+##Calcul des indicateurs SMI
+############################
+###Functions definitions
+tx1000<-function(x){round(1000*x[-1]/x[1],2)}
+tx100<-function(x){round(100*x[-1]/x[1],2)}
+###
+TMM<-apply(data_health[c(1,2),2:13],2,tx1000)
+PAA<-apply(data_health[c(1,3),2:13],2,tx100)
+TEVP_TEV2500_TMN <- apply(data_health[c(4:7),2:13],2,tx1000)
+TEM <-apply(data_health[c(8,9),2:13],2,tx1000)
+Indicator_health <- rbind(TMM, PAA)
+Indicator_health <- rbind(Indicator_health, TEVP_TEV2500_TMN)
+Indicator_health <- rbind(Indicator_health, TEM)
 Indicator_health <- as.data.frame(Indicator_health)
 Indicator_names <- data.frame(Indicateurs=
-              c('Accouchements (n)','TMM','TEV2500', 'TEVP','PAA'))
+              c('TMM','PAA','TEVP','TEV2500','TMN','TEM'))
 #symbole pour mille=Alt+0137
 Indicator_table <- cbind(Indicator_names, Indicator_health)
 
-tab6 <- xtable((Indicator_table),
+tab6 <- xtable((data_health),
+caption="Distribution mensuelle des données de Santé et maternité infantile",
+label="tab6",digits=0)
+print(tab6,floating.environment='sidewaystable', include.rownames = FALSE,scalebox=0.85)
+tab7<- xtable((Indicator_table),
 caption="Distribution mensuelle des indicateurs de Santé et maternité infantile",
-label="tab6",digits=1)
-print(tab6, include.rownames = FALSE,scalebox=0.8)
+label="tab7",digits=0)
+print(tab7, include.rownames = FALSE,scalebox=0.95)
+@
 @
 %\subsection{Santé }
 \subsection{Vaccination}
