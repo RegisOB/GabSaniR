@@ -329,6 +329,7 @@ Les données issues du fichier Infosani ont permis de décrire les indicateurs s
   \item Nombre d’enfants  sous l’allaitement exclusif (NEAE) pendant les 6 premiers mois 
   \item Taux d’enfants nés vivants ayant moins 2500g (TEV2500) pour 1000 naissances vivantes 
 \end{itemize}
+\clearpage
 <<tab6,results='asis',echo=FALSE,message=FALSE,warning=FALSE>>=
 
 ##Table accouchement total
@@ -434,16 +435,23 @@ Indicator_names <- data.frame(Indicateurs=
 #symbole pour mille=Alt+0137
 Indicator_table <- cbind(Indicator_names, Indicator_health)
 
-tab6 <- xtable((data_health),
+tab6a <- xtable((data_health[,1:7]),
 caption="Distribution mensuelle des données de Santé et maternité infantile",
-label="tab6",digits=0)
-print(tab6,floating.environment='sidewaystable', include.rownames = FALSE,scalebox=0.85)
+label="tab6a",digits=0)
+tab6b <- xtable((data_health[,c(1,8:13)]),
+caption="Distribution mensuelle des données de Santé et maternité infantile (suite)",
+label="tab6b",digits=0)
+#print(tab6,floating.environment='sidewaystable', include.rownames = FALSE,scalebox=0.85)
+print(tab6a, include.rownames = FALSE,scalebox=0.7)
+print(tab6b, include.rownames = FALSE,scalebox=0.7)
 tab7<- xtable((Indicator_table),
 caption="Distribution mensuelle des indicateurs de Santé et maternité infantile",
-label="tab7",digits=0)
-print(tab7, include.rownames = FALSE,scalebox=0.95)
+label="tab7",digits=1)
+print(tab7, include.rownames = FALSE,scalebox=0.7)
 @
-@
+
+
+\clearpage
 %\subsection{Santé }
 \subsection{Vaccination}
 
