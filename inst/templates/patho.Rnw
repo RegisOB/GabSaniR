@@ -31,11 +31,11 @@
 \vfill 
 
 \end{titlepage}
-% \listoftables
-% \listoffigures
-% \clearpage
-% \tableofcontents
-% \clearpage
+ \listoftables
+ \listoffigures
+ \clearpage
+\tableofcontents
+\clearpage
 
 \section{Profil épidémiologie}
 \subsection{La distribution du nombre de consultations par structure sanitaire}
