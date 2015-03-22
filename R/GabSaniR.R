@@ -670,7 +670,7 @@ InfoSaniR_check <- function(data = "patho", Year = 2000, file = FALSE) {
   L0 <- c('Province', 'Region_Sanitaire', 'Departement', 'Etablissement',
     'Nom', 'Maladies', 'Code_Maladie','Annee', 'Mois', 'Effectif')
   ListMistak0 <- which(is.na(as.numeric(as.character(data0$Effectif))))
-  Mistak0 <- data0[ListMistak1, L0]
+  Mistak0 <- data0[ListMistak0, L0]
   
   if (dim(Mistak0)[1]>1) {
     tab0 <- xtable((Mistak0),
