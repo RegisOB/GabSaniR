@@ -22,6 +22,7 @@ InfoSaniR_report(data, Year, file=FALSE)
 \examples{
 #Chargement des donnees de pathologie dans la session R
 data("Data_patho_2012")
+
 #Production du rapport annuel les pathologies 
 InfoSaniR_report(data='patho', Year=2012, file=FALSE)}
 \keyword{report }

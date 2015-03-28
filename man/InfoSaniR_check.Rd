@@ -36,16 +36,10 @@ InfoSaniR_check(data = "patho", Year = 2000, file = FALSE)
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
+##Chargement des donnees de pathologie dans la session R
+data("Data_patho_2012")
 
-## The function is currently defined as
-function (x) 
-{
-  }
+##Generation du fichiers d'erreurs 
+InfoSaniR_check(data = "patho", Year = 2000, file = FALSE)
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
+
